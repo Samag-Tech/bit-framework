@@ -1,0 +1,18 @@
+{
+    "name": "samagtech/bit-framework",
+    "description": "Framework custom basato su Slim",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Samagtech\\BitFramework\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alessandro Marotta",
+            "email": "alessandro.marotta@samag.tech"
+        }
+    ],
+    "require": {}
+}
