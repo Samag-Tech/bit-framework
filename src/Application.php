@@ -2,11 +2,30 @@
 
 use Bref\Event\Handler;
 use Dotenv\Dotenv;
+use SamagTech\SimpleAppBridge\Exceptions\BindingNotFoundException;
 use SamagTech\SimpleAppBridge\Exceptions\HandlerNotFoundException;
 
 class Application {
 
+    /**
+     * Namespace handler da eseguire
+     *
+     * @var string
+     *
+     *  @access private
+     *
+     */
     private ?string $handler = null;
+
+    /**
+     * Container di oggetti, valori e funzioni
+     * da poter utilizzare nell'applicativo
+     *
+     * @var array<string,mixed>
+     *
+     * @access private
+     */
+    private static $container = [];
 
     //-----------------------------------------------------------------------
 
@@ -48,6 +67,24 @@ class Application {
         }
 
         return new $this->handler;
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
+     * Restituisce i dati presenti nel container
+     *
+     * @param string $key   Chiave per accedere all'oggetto.
+     *
+     * @return mixed
+     */
+    public static function getObject(string $key) : mixed {
+
+        if ( ! isset(self::$container[$key]) ) {
+            throw new BindingNotFoundException();
+        }
+
+        return self::$container[$key];
     }
 
     //-----------------------------------------------------------------------
