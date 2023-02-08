@@ -1,4 +1,4 @@
-<?php namespace SamagTech\SimpleAppBridge\Exceptions;
+<?php namespace SamagTech\BitFramework\Exceptions;
 
 use Exception;
 
