@@ -2,8 +2,8 @@
 
 //-----------------------------------------------------------------------
 
+use Psr\Log\LoggerInterface;
 use SamagTech\BitFramework\Application;
-use SamagTech\BitFramework\Handlers\Logger;
 
 if ( ! function_exists('getClassName') ) {
 
@@ -65,7 +65,7 @@ if ( ! function_exists('log_message') ) {
      * @param array $context    Array chiave-valore che sostituisce i valori nel messagio ES. {value}. Default []
      */
     function log_message(string $level, string $message, array $context = []) {
-        app()->make(Logger::class)->write($level, $message, $context);
+        app()->make(LoggerInterface::class)->write($level, $message, $context);
     }
 }
 
