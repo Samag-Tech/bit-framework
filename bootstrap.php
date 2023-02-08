@@ -8,11 +8,9 @@ try {
 
     $app = Application::getInstance(__DIR__);
 
-    log_message('info', 'Inizializzazione');
-
     $app->bootProviders();
 
-    log_message('info', 'Caricamento provider');
+    log_message('info', 'Inizializzazione');
 
 }
 catch (Error|Exception $e) {
