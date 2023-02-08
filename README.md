@@ -74,6 +74,36 @@ class FooProvider implements \SamagTech\BitFramework\Contracts\Provider {
 
 ```
 
+## Creazione dei modelli
+
+Per la gestione del database è possibile utilizzare i modelli di [Laravel](https://laravel.com/docs/9.x/eloquent).
+
+```php
+class Foo extends Illuminate\Database\Eloquent\Model {}
+```
+
+## Environment
+
+Le seguenti variabili servono per configurare un ambiente:
+
+```text
+
+<!-- Configurazione per il DB -->
+DB_DRIVER=mysql
+DB_HOST=
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_PREFIX=
+
+<!-- Configura la tipologia di ambiente -->
+ENV=local
+
+<!-- Attiva/Disattiva il debug -->
+DEBUG=true
+
+```
+
 ## Helpers
 
 Lista degli helpers presenti:
