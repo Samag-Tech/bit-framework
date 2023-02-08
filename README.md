@@ -37,17 +37,32 @@ Successivamente deve essere creata l'applicazione di Bit
 ```php
 
 // index.php
-require __DIR__ . '/vendor/autoload.php';
 
-$app = __DIR__.'/vendor/samagtech/bit-framework/bootstrap.php';
+<?php
 
-// $app->register(Provider::class) Funzione per registrare dei provider
+use SamagTech\BitFramework\Application;
 
-// $app->bootDb() Da utilizzare nel caso di DB
+require __DIR__.'/vendor/autoload.php';
 
-$app->setHandler(Handler::class);   // Impostazione Handler da utilizzare
+$app = Application::getInstance(__DIR__);
 
-return $app->run();
+$app->bootProviders();
+
+try {
+
+    $app->setHandler(ProductHandler::class);
+
+    // $app->register(Provider::class) Funzione per registrare dei provider
+
+    // $app->bootDb() Da utilizzare nel caso di DB
+
+    return $app->run();
+
+}
+catch (Error|Exception $e) {
+
+    log_message('error', $e->getMessage(), ['exception' => $e]);
+}
 
 ```
 
