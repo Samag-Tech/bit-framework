@@ -61,6 +61,8 @@ if ( ! function_exists('log_message') ) {
      * Esegue la scrittura dei log
      *
      * @param string $level
+     * @param string $message
+     * @param array $context    Array chiave-valore che sostituisce i valori nel messagio ES. {value}. Default []
      */
     function log_message(string $level, string $message, array $context = []) {
         app()->make(Logger::class)->write($level, $message, $context);
