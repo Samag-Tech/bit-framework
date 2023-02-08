@@ -2,6 +2,9 @@
 
 //-----------------------------------------------------------------------
 
+use SamagTech\BitFramework\Application;
+use SamagTech\BitFramework\Handlers\Logger;
+
 if ( ! function_exists('getClassName') ) {
 
     /**
@@ -14,6 +17,20 @@ if ( ! function_exists('getClassName') ) {
     function getClassName(string $namespace) : string {
         $explodeNamespace = explode('\\', $namespace);
         return end($explodeNamespace);
+    }
+}
+
+//-----------------------------------------------------------------------
+
+if ( ! function_exists ('app') ) {
+
+    /**
+     * Restituisce l'istanza dell'applicazione
+     *
+     * @return \SamagTech\BitFramework\Application
+     */
+    function app() : Application {
+        return Application::getInstance();
     }
 }
 
@@ -37,3 +54,18 @@ if ( ! function_exists('debug') ) {
 }
 
 //-----------------------------------------------------------------------
+
+if ( ! function_exists('log_message') ) {
+
+    /**
+     * Esegue la scrittura dei log
+     *
+     * @param string $level
+     */
+    function log_message(string $level, string $message, array $context = []) {
+        app()->make(Logger::class)->write($level, $message, $context);
+    }
+}
+
+//-----------------------------------------------------------------------
+
