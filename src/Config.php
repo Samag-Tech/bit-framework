@@ -1,4 +1,4 @@
-<?php namespace SamagTech\SimpleAppBridge;
+<?php namespace SamagTech\BitFramework;
 
 /**
  * Classe astratta per la definizione di una configurazione
