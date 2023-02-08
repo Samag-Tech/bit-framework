@@ -1,11 +1,18 @@
-<?php namespace SamagTech\SimpleAppBridge;
+<?php namespace SamagTech\BitFramework;
 
-use Bref\Event\Handler;
+use Closure;
 use Dotenv\Dotenv;
-use SamagTech\SimpleAppBridge\Exceptions\BindingNotFoundException;
-use SamagTech\SimpleAppBridge\Exceptions\HandlerNotFoundException;
+use Bref\Event\Handler;
+use Illuminate\Database\Capsule\Manager as DB;
+use SamagTech\BitFramework\Contracts\Provider;
+use SamagTech\BitFramework\Exceptions\BindExistException;
+use SamagTech\BitFramework\Exceptions\BindingNotFoundException;
+use SamagTech\BitFramework\Exceptions\HandlerNotFoundException;
+use SamagTech\BitFramework\Providers\LoggerProvider;
 
 class Application {
+
+    private static ?self $instance = null;
 
     /**
      * Namespace handler da eseguire
@@ -17,6 +24,7 @@ class Application {
      */
     private ?string $handler = null;
 
+
     /**
      * Container di oggetti, valori e funzioni
      * da poter utilizzare nell'applicativo
@@ -25,22 +33,50 @@ class Application {
      *
      * @access private
      */
-    private static $container = [];
+    private static array $container = [];
+
+    /**
+     * Path di partenza dell'applicativo
+     *
+     * @var string
+     * @access private
+     */
+    private ?string $path;
+
+    private array $providers = [
+        LoggerProvider::class
+    ];
 
     //-----------------------------------------------------------------------
 
     /**
      * Costruttore.
      *
-     * @param string $env   Path del file .env per caricare l'environment
+     * @param string|null $path   Path di partenza dell'applicativo
      */
-    public function __construct(string $env) {
-
-        $dotenv = Dotenv::createImmutable($env);
-        $dotenv->load();
+    public function __construct(?string $path = null) {
+       $this->path = $path;
+       $this->loadEnvironment();
     }
 
     //-----------------------------------------------------------------------
+
+    /**
+     * Restituisce l'istanza dell'applicazione
+     *
+     * @static
+     * @param string|null $path  Path di partenza dell'applicativo
+     *
+     * @return self
+     */
+    public static function getInstance(?string $path = null) : self {
+
+        if ( is_null(self::$instance)) {
+            self::$instance = new static($path);
+        }
+
+        return self::$instance;
+    }
 
     /**
      * Imposta l'handler tramite namespace
@@ -66,7 +102,125 @@ class Application {
             throw new HandlerNotFoundException();
         }
 
-        return new $this->handler;
+        if ( ! isset(self::$container[$this->handler]) ) {
+            return new $this->handler;
+        }
+
+        $handler = self::$container[$this->handler];
+
+        if ( $handler instanceof Closure ) {
+            return $handler();
+        }
+
+        return $handler;
+
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
+     * Restituisce il base path dell'applicativo
+     *
+     * @access public
+     *
+     * @return string
+     */
+    public function basePath() : string {
+        return $this->path;
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
+     * Restituisce l'istanza della dipendenza
+     *
+     * @access public
+     *
+     * @param string $key   Identificativo della dipendenza da recuperare
+     *
+     * @return mixed
+     */
+    public function make(string $key) {
+        $value = self::getContainer($key);
+
+        if ( $value instanceof Closure) {
+            return $value();
+        }
+
+        return $value;
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
+     * Carica la dipendenza nell'applicazione
+     *
+     * @access public
+     * @param string $key   Identificativo della dipendenza
+     * @param mixed $value  Dipendenza da caricare
+     *
+     * @return void
+     */
+    public function bind(string $key, $value) : void {
+        self::putContainer($key, $value);
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
+     * Registra un provider
+     *
+     * @access public
+     *
+     * @param \SamagTech\BitFramework\Contracts\Provider $provider  Provider da registrare
+     *
+     * @return void
+     */
+    public function register(Provider $provider) : void {
+        $provider->register();
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
+     * Carica i provider di default dell'applicazione
+     *
+     * @access public
+     *
+     * @return void
+     */
+    public function bootProviders() : void {
+
+        foreach ($this->providers as $provider) {
+            $this->register(new $provider);
+        }
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
+     * Carica l'istanza del DB
+     *
+     * @return void
+     */
+    public function bootDb() : void {
+
+        $db = new DB();
+
+        $db->addConnection([
+            'driver' => env('DB_DRIVER', 'mysql'),
+            'host' => env('DB_HOST', 'localhost'),
+            'database' => env('DB_NAME'),
+            'username' => env('DB_USER'),
+            'password' => env('DB_PASSWORD'),
+            'charset' => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix' => env('DB_PREFIX', ''),
+        ]);
+
+
+        $db->bootEloquent();
+
     }
 
     //-----------------------------------------------------------------------
@@ -74,11 +228,13 @@ class Application {
     /**
      * Restituisce i dati presenti nel container
      *
+     * @access private
+     * @static
      * @param string $key   Chiave per accedere all'oggetto.
      *
      * @return mixed
      */
-    public static function getObject(string $key) : mixed {
+    private static function getContainer(string $key) : mixed {
 
         if ( ! isset(self::$container[$key]) ) {
             throw new BindingNotFoundException();
@@ -88,4 +244,44 @@ class Application {
     }
 
     //-----------------------------------------------------------------------
+
+    /**
+     * Immette nel container un nuovo valore
+     *
+     * @access private
+     * @static
+     *
+     * @param string $key   Chiave con cui salvare il valore
+     * @param mixed $value  Valore da associare alla chiave
+     *
+     * @return void
+     */
+    private static function putContainer(string $key, $value) : void {
+
+        if ( isset(self::$container[$key]) ) {
+            throw new BindExistException();
+        }
+
+        self::$container[$key] = $value;
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
+     * Carica l'ambiente dal .env
+     *
+     * @access private
+     *
+     * @return void
+     */
+    private function loadEnvironment() : void {
+
+        if ( ! is_null($this->path) ) {
+            $dotenv = Dotenv::createImmutable($this->path);
+            $dotenv->load();
+        }
+    }
+
+    //-----------------------------------------------------------------------
+
 }
