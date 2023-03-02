@@ -36,7 +36,7 @@ Successivamente deve essere creata l'applicazione di Bit
 
 ```php
 
-// index.php
+// bootstrap.php
 
 <?php
 
@@ -48,13 +48,24 @@ $app = Application::getInstance(__DIR__);
 
 $app->bootProviders();
 
+// $app->register(Provider::class) Funzione per registrare dei provider
+
+// $app->bootDb() Da utilizzare nel caso di DB
+
+return $app;
+
+```
+
+ed infine, deve essere creato il punto di avvio dell'applicazione
+
+```php
+// index.php
+
 try {
 
+    $app = require __DIR__.'/bootstrap.php'
+
     $app->setHandler(ProductHandler::class);
-
-    // $app->register(Provider::class) Funzione per registrare dei provider
-
-    // $app->bootDb() Da utilizzare nel caso di DB
 
     return $app->run();
 
@@ -116,6 +127,30 @@ ENV=local
 
 <!-- Attiva/Disattiva il debug -->
 DEBUG=true
+
+```
+## Configurazioni DB
+
+Per aggiungere più connessione al DB deve essere creato il file config/database.php con il seguente contenuto
+
+```php
+
+<?php
+
+return [
+    'default'   => [
+        'driver'    => env('DB_DRIVER', 'mysql'),
+        'host'      => env('DB_HOST', '127.0.0.1'),
+        'database'  => env('DB_NAME', ''),
+        'username'  => env('DB_USER', ''),
+        'password'  => env('DB_PASSWORD', ''),
+        'charset'   => 'utf8',
+        'collation' => 'utf8_unicode_ci',
+        'prefix'    => env('DB_PREFIX', ''),
+        'port'      => env('DB_PORT', '3306'),
+    ]
+
+];
 
 ```
 
