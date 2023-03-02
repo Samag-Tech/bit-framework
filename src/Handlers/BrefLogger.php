@@ -32,7 +32,7 @@ class BrefLogger {
          * Se l'ambiente non è 'local' allora scrivo sullo standard error
          * altrimenti creo i file fisici
          */
-        if ( ! env('ENV', 'local') ) {
+        if ( env('ENV', 'local') != 'local' ) {
             $stream = 'php://stderr';
         }
         else {
