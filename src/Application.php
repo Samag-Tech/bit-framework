@@ -119,6 +119,19 @@ class Application {
     //-----------------------------------------------------------------------
 
     /**
+     * Pulisce l'istanza del container
+     *
+     * @access public
+     *
+     * @return void
+     */
+    public function clearInstance () : void {
+        self::$container = [];
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
      * Restituisce il base path dell'applicativo
      *
      * @access public
