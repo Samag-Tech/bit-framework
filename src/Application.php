@@ -207,20 +207,72 @@ class Application {
 
         $db = new DB();
 
-        $db->addConnection([
-            'driver' => env('DB_DRIVER', 'mysql'),
-            'host' => env('DB_HOST', 'localhost'),
-            'database' => env('DB_NAME'),
-            'username' => env('DB_USER'),
-            'password' => env('DB_PASSWORD'),
-            'charset' => 'utf8',
-            'collation' => 'utf8_unicode_ci',
-            'prefix' => env('DB_PREFIX', ''),
-        ]);
+        $dbConnections = $this->getDbConnections();
 
+        foreach ($dbConnections as $connectionName =>  $dbConnection ) {
+            $db->addConnection($dbConnection, $connectionName);
+        }
 
         $db->bootEloquent();
 
+    }
+
+    //-----------------------------------------------------------------------
+
+    /**
+     * Recupera tutte le connessioni al DB
+     *
+     * @access private
+     *
+     * @return array
+     */
+    private function getDbConnections() : array {
+
+        // Conterrà tutte le connessioni
+        $connections = [];
+
+        // Se l'ambiente è di test allora creo la configurazione di test
+        if ( env('ENV') == 'testing') {
+            $connections[] =
+                [
+                    'testing' => [
+                        'driver'    => env('DB_TEST_DRIVER', 'sqlite'),
+                        'host'      => env('DB_TEST_HOST', ''),
+                        'database'  => env('DB_TEST_NAME'),
+                        'username'  => env('DB_TEST_USER'),
+                        'password'  => env('DB_TEST_PASSWORD'),
+                        'charset'   => 'utf8',
+                        'collation' => 'utf8_unicode_ci',
+                        'prefix'    => env('DB_TEST_PREFIX', ''),
+                        'port'      => env('DB_TEST_PORT', '3306'),
+                    ]
+                ];
+
+        }
+
+        // Se presente il file delle configurazioni lo utilizzo
+        // altrimenti utilizzo la configurazione di default
+        if ( file_exists($this->path.'/config/database.php') ) {
+            $connections = require $this->path.'/config/database.php';
+        } else {
+
+            $connections[] = [
+                'default'   => [
+                    'driver'    => env('DB_TEST_DRIVER', 'sqlite'),
+                    'host'      => env('DB_TEST_HOST', ''),
+                    'database'  => env('DB_TEST_NAME'),
+                    'username'  => env('DB_TEST_USER'),
+                    'password'  => env('DB_TEST_PASSWORD'),
+                    'charset'   => 'utf8',
+                    'collation' => 'utf8_unicode_ci',
+                    'prefix'    => env('DB_TEST_PREFIX', ''),
+                    'port'      => env('DB_TEST_PORT', '3306'),
+                ]
+            ];
+        }
+
+
+        return $connections;
     }
 
     //-----------------------------------------------------------------------
