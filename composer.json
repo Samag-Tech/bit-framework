@@ -22,5 +22,8 @@
             "name": "Alessandro Marotta",
             "email": "alessandro.marotta@samag.tech"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9.6"
+    }
 }
