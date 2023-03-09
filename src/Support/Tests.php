@@ -55,7 +55,7 @@ abstract class Tests extends TestCase {
      */
     private function refreshApplication() : void {
 
-        if ( is_null($this->app) ) {
+        if ( ! isset($this->app) ) {
             $this->app = Application::getInstance();
         }
 
