@@ -160,4 +160,6 @@ Lista degli helpers presenti:
 
 - app() -> Restituisce l'istanza dell'app
 - debug() -> Esegue il print_r() della lista dei parametri passati con die() finale
+- d() -> Debug con kint
+- dd() -> Debug con kint più die()
 - log_message() -> Scrivere un log
