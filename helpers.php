@@ -53,6 +53,22 @@ if ( ! function_exists('debug') ) {
     }
 }
 
+
+if ( ! function_exists('dd') ) {
+
+    /**
+     * Esegue il var dump della lista dei parametri passati
+     *
+     * @param array ...$d   Lista dati
+     *
+     * @return void
+     */
+    function dd(...$d) {
+        d($d);
+        die;
+    }
+}
+
 //-----------------------------------------------------------------------
 
 if ( ! function_exists('log_message') ) {

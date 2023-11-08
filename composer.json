@@ -6,7 +6,8 @@
         "illuminate/database": "^10.1",
         "spatie/laravel-activitylog": "^4.7",
         "vlucas/phpdotenv": "^5.5",
-        "bref/logger": "^1.0"
+        "bref/logger": "^1.0",
+        "kint-php/kint": "^5.0"
     },
     "license": "MIT",
     "autoload": {
