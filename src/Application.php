@@ -246,20 +246,17 @@ class Application {
 
         // Se l'ambiente è di test allora creo la configurazione di test
         if ( env('ENV') == 'testing') {
-            $connections[] =
-                [
-                    'testing' => [
-                        'driver'    => env('DB_TEST_DRIVER', 'sqlite'),
-                        'host'      => env('DB_TEST_HOST', ''),
-                        'database'  => env('DB_TEST_NAME'),
-                        'username'  => env('DB_TEST_USER'),
-                        'password'  => env('DB_TEST_PASSWORD'),
-                        'charset'   => 'utf8',
-                        'collation' => 'utf8_unicode_ci',
-                        'prefix'    => env('DB_TEST_PREFIX', ''),
-                        'port'      => env('DB_TEST_PORT', '3306'),
-                    ]
-                ];
+            $connections['testing'] = [
+                'driver'    => env('DB_TEST_DRIVER', 'sqlite'),
+                'host'      => env('DB_TEST_HOST', ''),
+                'database'  => env('DB_TEST_NAME'),
+                'username'  => env('DB_TEST_USER'),
+                'password'  => env('DB_TEST_PASSWORD'),
+                'charset'   => 'utf8',
+                'collation' => 'utf8_unicode_ci',
+                'prefix'    => env('DB_TEST_PREFIX', ''),
+                'port'      => env('DB_TEST_PORT', '3306'),
+            ];
 
         }
 
@@ -269,18 +266,16 @@ class Application {
             $connections = require $this->path.'/config/database.php';
         } else {
 
-            $connections[] = [
-                'default'   => [
-                    'driver'    => env('DB_DRIVER', 'mysql'),
-                    'host'      => env('DB_HOST', '127.0.0.1'),
-                    'database'  => env('DB_NAME', ''),
-                    'username'  => env('DB_USER', ''),
-                    'password'  => env('DB_PASSWORD', ''),
-                    'charset'   => 'utf8',
-                    'collation' => 'utf8_unicode_ci',
-                    'prefix'    => env('DB_PREFIX', ''),
-                    'port'      => env('DB_PORT', '3306'),
-                ]
+            $connections['default'] = [
+                'driver'    => env('DB_DRIVER', 'mysql'),
+                'host'      => env('DB_HOST', '127.0.0.1'),
+                'database'  => env('DB_NAME', ''),
+                'username'  => env('DB_USER', ''),
+                'password'  => env('DB_PASSWORD', ''),
+                'charset'   => 'utf8',
+                'collation' => 'utf8_unicode_ci',
+                'prefix'    => env('DB_PREFIX', ''),
+                'port'      => env('DB_PORT', '3306'),
             ];
         }
 
